@@ -15,31 +15,58 @@ func main() {
 	PartTwo()
 }
 
+type Game struct {
+	id   int
+	runs []Run
+}
+
+type Run struct {
+	subsets []Subset
+}
+
+type Subset struct {
+	number int
+	color  string
+}
+
+func parseGame(line string) Game {
+	game := Game{}
+	sepLine := strings.Split(line, ": ")
+	game.id, _ = strconv.Atoi(strings.Split(sepLine[0], " ")[1])
+	runs := strings.Split(sepLine[1], "; ")
+	game.runs = make([]Run, len(runs))
+	for i, run := range runs {
+		subsets := strings.Split(run, ", ")
+		game.runs[i].subsets = make([]Subset, len(subsets))
+		for j, subset := range subsets {
+			numberColor := strings.Split(subset, " ")
+			number, _ := strconv.Atoi(numberColor[0])
+			color := numberColor[1]
+			game.runs[i].subsets[j] = Subset{number, color}
+		}
+	}
+	return game
+}
+
 func PartOne() {
+	result := 0
+
 	limits := map[string]int{
 		"red":   12,
 		"green": 13,
 		"blue":  14,
 	}
 
-	result := 0
-
 	for _, line := range strings.Split(input, "\n") {
-		sepLine := strings.Split(line, ": ")
-		gameId, _ := strconv.Atoi(strings.Split(sepLine[0], " ")[1])
-
-		for _, attempt := range strings.Split(sepLine[1], "; ") {
-			for _, pick := range strings.Split(attempt, ", ") {
-				numberColor := strings.Split(pick, " ")
-				number, _ := strconv.Atoi(numberColor[0])
-				color := numberColor[1]
-
-				if number > limits[color] {
+		game := parseGame(line)
+		for _, run := range game.runs {
+			for _, subset := range run.subsets {
+				if subset.number > limits[subset.color] {
 					goto invalid
 				}
 			}
 		}
-		result += gameId
+		result += game.id
 	invalid:
 		continue
 	}
@@ -56,14 +83,11 @@ func PartTwo() {
 			"blue":  0,
 		}
 
-		for _, attempt := range strings.Split(strings.Split(line, ": ")[1], "; ") {
-			for _, pick := range strings.Split(attempt, ", ") {
-				numberColor := strings.Split(pick, " ")
-				number, _ := strconv.Atoi(numberColor[0])
-				color := numberColor[1]
-
-				if number > minimum[color] {
-					minimum[color] = number
+		game := parseGame(line)
+		for _, run := range game.runs {
+			for _, subset := range run.subsets {
+				if subset.number > minimum[subset.color] {
+					minimum[subset.color] = subset.number
 				}
 			}
 		}
