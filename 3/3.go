@@ -27,9 +27,8 @@ func PartOne() {
 	for i := 0; i < len(engine); i++ {
 		number := strings.Builder{}
 		for j := 0; j < len(engine[i]); j++ {
-			for j < len(engine[i]) && isNumber(engine[i][j]) {
+			for ; j < len(engine[i]) && isNumber(engine[i][j]); j++ {
 				number.WriteByte(engine[i][j])
-				j++
 			}
 			if number.Len() > 0 {
 				symbols := getAdjacentSymbols(engine, isAnySymbol, i-1, j-number.Len()-1, i+1, j)
@@ -56,9 +55,8 @@ func PartTwo() {
 	for i := 0; i < len(engine); i++ {
 		number := strings.Builder{}
 		for j := 0; j < len(engine[i]); j++ {
-			for j < len(engine[i]) && isNumber(engine[i][j]) {
+			for ; j < len(engine[i]) && isNumber(engine[i][j]); j++ {
 				number.WriteByte(engine[i][j])
-				j++
 			}
 			if number.Len() > 0 {
 				symbols := getAdjacentSymbols(engine, isGear, i-1, j-number.Len()-1, i+1, j)
